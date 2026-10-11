@@ -1,7 +1,7 @@
 CC     = gcc
 CFLAGS = -std=c99 -Wall -Wextra -pedantic -g
-EXEC   = rsa
-SRC    = main.c rsa_tools.c bezout.c
+EXEC   = main
+SRC    = main.c rsa_tools.c bezout.c phase1.c
 OBJ    = $(SRC:.c=.o)
 
 all: $(EXEC)
@@ -16,6 +16,6 @@ clean:
 	rm -f $(OBJ)
 
 mrproper: clean
-	rm -f $(EXEC)
+	rm -f $(EXEC) keys_log
 
 .PHONY: all clean mrproper
