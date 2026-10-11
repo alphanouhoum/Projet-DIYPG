@@ -63,4 +63,6 @@ typedef struct account {
 	uint32 solde;
 } Account;
 
+void calculer_merkle_root(Block *b);
+
 #endif // __BC_DEFINES__
