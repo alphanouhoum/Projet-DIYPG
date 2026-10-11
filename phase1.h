@@ -31,4 +31,21 @@ uint64_t pgcdFast(uint64_t a, uint64_t b);
  */
 void genKeysRabin(rsaKey_t *pubKey, rsaKey_t *privKey, uint64_t max_prime);
 
+
+/** affiche une clef au format hexadécimal : "(E=0x..., N=0x...)" */
+void printKeyHex(const rsaKey_t *key);
+
+/** affiche une paire de clefs (publique puis privée) en hexadécimal */
+void printKeyPairHex(const keyPair_t *kp);
+
+/** sauve une paire de clefs dans un fichier texte (hexa). 
+ * @return 0 si OK, -1 sinon 
+ * */
+int saveKeys(const char *filename, const keyPair_t *kp);
+
+/** charge une paire de clefs depuis un fichier. 
+ * @return 0 si OK, -1 sinon
+ * */
+int loadKeys(const char *filename, keyPair_t *kp);
+
 #endif
