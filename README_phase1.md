@@ -137,7 +137,7 @@ Un test est considéré comme réussi si :
 
 Cette politique de tests permet de vérifier le fonctionnement du chiffrement et du déchiffrement sur des fichiers, ainsi que la conservation du message original après déchiffrement.
 
-# Phase 1.2 
+# Phase 1.23
 
 ## Bilan des tests de validation
 
@@ -148,3 +148,10 @@ Plusieurs types de données ont été utilisés pour tester les conversions : de
 Pour chaque test, les données sont encodées en Base64, puis décodées afin de comparer le résultat avec les données originales. La comparaison s'effectue sur les octets et les tailles des données.
 
 Le test est validé si l'encodage en Base64 est correctement effectué et si le décodage permet de retrouver le message original.
+
+### Compilation
+
+À la racine du projet, exécuter la commande suivante :
+
+Lancer la commande : make
+puis executé l'executable pour lancer les tests: ./main 
