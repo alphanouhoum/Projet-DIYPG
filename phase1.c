@@ -5,16 +5,17 @@
 #include <stdint.h>
 
 /* ============================================================
- * PHASE 1.0 
- * ============================================================ 
+ * PHASE 1.0
+ * ============================================================
  * */
 
-void printKeyHex(const rsaKey_t *key){
+void printKeyHex(const rsaKey_t *key)
+{
     printf("E= 0x%llx, N=0x%llx\n", (unsigned long long)key->E, (unsigned long long)key->N);
 }
 
-
-void printKeyPairHex(const keyPair_t *kp){
+void printKeyPairHex(const keyPair_t *kp)
+{
     printf("Clé publique : ");
     printKeyHex(&kp->pubKey);
 
@@ -22,7 +23,8 @@ void printKeyPairHex(const keyPair_t *kp){
     printKeyHex(&kp->privKey);
 }
 
-int saveKeys(const char *filename, const keyPair_t *kp){
+int saveKeys(const char *filename, const keyPair_t *kp)
+{
     FILE *f = fopen(filename, "w");
 
     if (f == NULL)
@@ -30,15 +32,15 @@ int saveKeys(const char *filename, const keyPair_t *kp){
         return -1;
     }
 
-    fprintf(f, "%llu  %llu\n", (unsigned long long)kp->pubKey.E, (unsigned long long)kp->pubKey.N);
-    fprintf(f, "%llu  %llu\n", (unsigned long long)kp->privKey.E, (unsigned long long)kp->privKey.N);
+    fprintf(f, "Clé publique : E= %llu  N= %llu\n", (unsigned long long)kp->pubKey.E, (unsigned long long)kp->pubKey.N);
+    fprintf(f, "Clé privée   : E= %llu  N= %llu\n", (unsigned long long)kp->privKey.E, (unsigned long long)kp->privKey.N);
     fclose(f);
 
     return 0;
-    
 }
 
-int loadKeys(const char *filename, keyPair_t *kp){
+int loadKeys(const char *filename, keyPair_t *kp)
+{
     FILE *f = fopen(filename, "r");
 
     if (f == NULL)
@@ -46,16 +48,17 @@ int loadKeys(const char *filename, keyPair_t *kp){
         return -1;
     }
 
+    // load de la cle publique
 
-    //load de la cle publique
-
-    if(fscanf(f, "%llu  %llu", (unsigned long long)&kp->pubKey.E, (unsigned long long)&kp->pubKey.N ) != 2){
+    if (fscanf(f, "Clé publique : E= %llu  N= %llu\n", &kp->pubKey.E, &kp->pubKey.N) != 2)
+    {
         fclose(f);
         return -1;
     }
 
-    //load de la cle prive 
-    if(fscanf(f, "%llu  %llu", (unsigned long long)&kp->privKey.E, (unsigned long long)&kp->privKey.N) != 2){
+    // load de la cle prive
+    if (fscanf(f, "Clé privée   : E= %llu  N= %llu\n", &kp->privKey.E, &kp->privKey.N) != 2)
+    {
         fclose(f);
         return -1;
     }
@@ -65,13 +68,15 @@ int loadKeys(const char *filename, keyPair_t *kp){
 }
 
 /* ============================================================
- * PHASE 1.1 
+ * PHASE 1.1
  * ============================================================ */
 
-uint8_t * chiffrer_tab_octet (const uint8_t *message, size_t taille, const rsaKey_t *pubKey){
+uint8_t *chiffrer_tab_octet(const uint8_t *message, size_t taille, const rsaKey_t *pubKey)
+{
+    uint8_t *res = malloc(taille * NB_OCTETS_CHIFFRE);
 
-    uint8_t *res = malloc(taille * NB_OCTETS_CHIFFRE); 
-    if (res == NULL) return NULL;   
+    if (res == NULL)
+        return NULL;
 
     for (size_t i = 0; i < taille; i++)
     {
@@ -80,40 +85,40 @@ uint8_t * chiffrer_tab_octet (const uint8_t *message, size_t taille, const rsaKe
     }
 
     return res;
-    
 }
 
-uint8_t *dechiffrer_tab_octet(const uint8_t *message_chiffre, size_t taille, const rsaKey_t *privKey){
+uint8_t *dechiffrer_tab_octet(const uint8_t *message_chiffre, size_t taille, const rsaKey_t *privKey)
+{
     size_t taille_message = taille / NB_OCTETS_CHIFFRE;
-    uint8_t *res = malloc(taille_message);
-    if (res == NULL) return NULL;
+    uint8_t *res = malloc(taille_message + 1);
+    if (res == NULL)
+        return NULL;
 
-    for ( size_t i = 0; i < taille_message; i++)
+    for (size_t i = 0; i < taille_message; i++)
     {
         uint32_t caractere_chiffre = convert_4byte2int((uint8_t *)&message_chiffre[i * NB_OCTETS_CHIFFRE]);
-        
+
         res[i] = (uint8_t)puissance_mod_n(caractere_chiffre, privKey->E, privKey->N);
     }
 
     res[taille_message] = '\0';
     return res;
-    
 }
 
 /* ============================================================
  * PHASE 1.2
  * ============================================================ */
 
+int chiffrer_fichier(const char *fichier_entree, const char *fichier_sortie, const rsaKey_t *pubKey)
+{
 
-int chiffrer_fichier(const char *fichier_entree, const char *fichier_sortie, const rsaKey_t *pubKey){
-    
-    //ouverture du fichier entrer
+    // ouverture du fichier entrer
     FILE *f_entree = fopen(fichier_entree, "rb");
 
     if (f_entree == NULL)
     {
         perror("Erreur d'ouverture du fichier d'entrer");
-        return -1; 
+        return -1;
     }
 
     // Determination de la taille du fichier
@@ -125,33 +130,29 @@ int chiffrer_fichier(const char *fichier_entree, const char *fichier_sortie, con
 
     long taille_fichier = ftell(f_entree);
 
-    //fichier vide 
-    if (taille_fichier < 0)
-    {
-        fclose(f_entree);
-        return -1;
-    }
+    
     rewind(f_entree);
 
-    //Lecture du fichier
+    // Lecture du fichier
     size_t taille = (size_t)taille_fichier;
     uint8_t *message = malloc(taille);
-    
+
     if (message == NULL)
     {
         fclose(f_entree);
         return -1;
     }
 
-    if(fread(message, 1, taille, f_entree) != taille){
+    if (fread(message, 1, taille, f_entree) != taille)
+    {
         free(message);
         fclose(f_entree);
-        printf("MESSAGE lu différent de Taille fichier\n");
+        perror("MESSAGE lu différent de Taille fichier\n");
         return -1;
     }
 
     fclose(f_entree);
-    //chiffrement du message 
+    // chiffrement du message
 
     uint8_t *message_chiffrer = chiffrer_tab_octet(message, taille, pubKey);
 
@@ -159,10 +160,11 @@ int chiffrer_fichier(const char *fichier_entree, const char *fichier_sortie, con
 
     if (message_chiffrer == NULL)
     {
+        fprintf(stderr,"Erreur de chiffrement\n");
         return -1;
     }
 
-    //ouverture fichier sortie
+    // ouverture fichier sortie
     FILE *f_sortie = fopen(fichier_sortie, "wb");
 
     if (f_sortie == NULL)
@@ -176,20 +178,20 @@ int chiffrer_fichier(const char *fichier_entree, const char *fichier_sortie, con
 
     fwrite(message_chiffrer, 1, taille_chiffree, f_sortie);
     free(message_chiffrer);
-    fclose(f_sortie);    
+    fclose(f_sortie);
 
     return 0;
-
 }
 
-int dechiffrer_fichier(const char *fichier_entree, const char *fichier_sortie, const rsaKey_t *privKey){
-    //ouverture du fichier entrer
+int dechiffrer_fichier(const char *fichier_entree, const char *fichier_sortie, const rsaKey_t *privKey)
+{
+    // ouverture du fichier entrer
     FILE *f_entree = fopen(fichier_entree, "rb");
 
     if (f_entree == NULL)
     {
         perror("Erreur d'ouverture du fichier d'entrer");
-        return -1; 
+        return -1;
     }
 
     // Determination de la taille du fichier
@@ -201,43 +203,37 @@ int dechiffrer_fichier(const char *fichier_entree, const char *fichier_sortie, c
 
     long taille_fichier = ftell(f_entree);
 
-    //fichier vide 
-    if (taille_fichier < 0)
-    {
-        fclose(f_entree);
-        return -1;
-    }
     rewind(f_entree);
 
-    //Lecture du fichier
+    // Lecture du fichier
     size_t taille = (size_t)taille_fichier;
     uint8_t *message_chiffrer = malloc(taille);
-    
+
     if (message_chiffrer == NULL)
     {
         fclose(f_entree);
         return -1;
     }
 
-    if(fread(message_chiffrer, 1, taille, f_entree) != taille){
+    if (fread(message_chiffrer, 1, taille, f_entree) != taille)
+    {
         free(message_chiffrer);
         fclose(f_entree);
-        printf("MESSAGE lu différent de Taille fichier\n");
+        perror("MESSAGE lu différent de Taille fichier\n");
         return -1;
     }
 
     fclose(f_entree);
-    //dechiffrement du message
-    
+    // dechiffrement du message
+
     uint8_t *message_dechiffrer = dechiffrer_tab_octet(message_chiffrer, taille, privKey);
     free(message_chiffrer);
 
     if (message_dechiffrer == NULL)
     {
-        perror("Erreur de dechiffrement");
+        fprintf(stderr,"Erreur de déchiffrement\n");
         return -1;
     }
-    
 
     FILE *f_sortie = fopen(fichier_sortie, "wb");
 
@@ -253,10 +249,230 @@ int dechiffrer_fichier(const char *fichier_entree, const char *fichier_sortie, c
     fwrite(message_dechiffrer, 1, taille_dechiffree, f_sortie);
 
     free(message_dechiffrer);
-    fclose(f_sortie);    
+    fclose(f_sortie);
 
     return 0;
+}
+
+/* ============================================================
+ * PHASE 1.3
+ * ============================================================ */
+
+char *uint8_to_base64(const uint8_t *message, size_t taille, size_t *taille_resultat)
+{
+    if (message == NULL && taille > 0)
+        return NULL;
+
+    if (taille_resultat == NULL)
+        return NULL;
+
+    char *resultat = base64_encode(
+        message,
+        taille,
+        taille_resultat);
+
+    if (resultat == NULL)
+        return NULL;
+
+    resultat[*taille_resultat] = '\0';
+
+    return resultat;
+}
+
+uint8_t *base64_to_uint8(const char *message_base64, size_t taille, size_t *taille_resultat)
+{
+    if (message_base64 == NULL || taille_resultat == NULL)
+        return NULL;
+
+    unsigned char *resultat = base64_decode(
+        message_base64,
+        taille,
+        taille_resultat);
+
+    return resultat;
+}
+
+int fichier_binaire_vers_base64(const char *fichier_entree, const char *fichier_sortie)
+{
+    if (fichier_entree == NULL || fichier_sortie == NULL)
+    {
+        return -1;
+    }
+
+    FILE *fichier = fopen(fichier_entree, "rb");
+
+    if (fichier == NULL)
+    {
+        perror("Erreur ouverture fichier binaire");
+        return -1;
+    }
+
+    if (fseek(fichier, 0, SEEK_END) != 0)
+    {
+        perror("Erreur lecture taille fichier");
+        fclose(fichier);
+        return -1;
+    }
+
+    long taille_fichier = ftell(fichier);
+
+    if (fseek(fichier, 0, SEEK_SET) != 0)
+    {
+        perror("Erreur retour debut fichier");
+        fclose(fichier);
+        return -1;
+    }
+
+    size_t taille = (size_t)taille_fichier;
+
+    /* Lecture du fichier */
+    uint8_t *message = malloc(taille);
+
+    if (message == NULL)
+    {
+        fprintf(stderr, "Erreur allocation memoire.\n");
+        fclose(fichier);
+        return -1;
+    }
+
+    if (fread(message, 1, taille, fichier) != taille)
+    {
+        fprintf(stderr, "Erreur lecture fichier binaire.\n");
+        free(message);
+        fclose(fichier);
+        return -1;
+    }
+
+    /* Encodage en Base64 */
+    size_t taille_base64 = 0;
+
+    char *resultat = uint8_to_base64(
+        message,
+        taille,
+        &taille_base64);
+
+    free(message);
+
+    if (resultat == NULL)
+    {
+        fprintf(stderr, "Erreur encodage Base64.\n");
+        return -1;
+    }
+
+    /* Ouverture du fichier de sortie */
+    fichier = fopen(fichier_sortie, "wb");
+
+    if (fichier == NULL)
+    {
+        perror("Erreur ouverture fichier Base64");
+        free(resultat);
+        return -1;
+    }
+
+    /* Écriture du résultat Base64 */
+    if (fwrite(resultat, 1, taille_base64, fichier) != taille_base64)
+    {
+        perror("Erreur ecriture fichier Base64");
+        free(resultat);
+        fclose(fichier);
+        return -1;
+    }
+
+    free(resultat);
+
+    return 0;
+}
+
+int fichier_base64_vers_binaire(const char *fichier_entree, const char *fichier_sortie)
+{
+    if (fichier_entree == NULL || fichier_sortie == NULL)
+        return -1;
+
+    /* Ouverture du fichier Base64 en lecture */
+    FILE *fichier = fopen(fichier_entree, "rb");
+
+    if (fichier == NULL)
+    {
+        perror("Erreur ouverture fichier Base64");
+        return -1;
+    }
+
+    /* Déterminer la taille du fichier */
+    if (fseek(fichier, 0, SEEK_END) != 0)
+    {
+        perror("Erreur lecture taille fichier");
+        fclose(fichier);
+        return -1;
+    }
+
+    long taille_fichier = ftell(fichier);
+
+    if (fseek(fichier, 0, SEEK_SET) != 0)
+    {
+        perror("Erreur retour debut fichier");
+        fclose(fichier);
+        return -1;
+    }
+
+    size_t taille = (size_t)taille_fichier;
+
+    /* Lecture du fichier Base64 */
+    char *message_base64 = malloc(taille);
+
+    if (message_base64 == NULL)
+    {
+        fprintf(stderr, "Erreur allocation memoire.\n");
+        fclose(fichier);
+        return -1;
+    }
+
+    if (fread(message_base64, 1, taille, fichier) != taille)
+    {
+        fprintf(stderr, "Erreur lecture fichier Base64.\n");
+        free(message_base64);
+        fclose(fichier);
+        return -1;
+    }
 
 
+    /* Décodage Base64 */
+    size_t taille_binaire = 0;
+    uint8_t *resultat;
 
+    resultat = base64_to_uint8(
+            message_base64,
+            taille,
+            &taille_binaire);
+    
+
+    free(message_base64);
+
+    if (resultat == NULL)
+    {
+        fprintf(stderr, "Erreur decodage Base64.\n");
+        return -1;
+    }
+
+    /* Création du fichier binaire de sortie */
+    fichier = fopen(fichier_sortie, "wb");
+
+    if (fichier == NULL)
+    {
+        perror("Erreur ouverture fichier binaire");
+        free(resultat);
+        return -1;
+    }
+
+    /* Écriture des octets décodés */
+    if (fwrite(resultat, 1, taille_binaire, fichier) != taille_binaire)
+    {
+        perror("Erreur ecriture fichier binaire");
+        free(resultat);
+        fclose(fichier);
+        return -1;
+    }
+
+    free(resultat);
+
+    return 0;
 }

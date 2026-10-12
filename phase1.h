@@ -3,8 +3,7 @@
 
 #include "rsa_common_header.h"
 
-#define NB_OCTETS_CHIFFRE 4 
-//chaque résultat chiffré est stocké sur 4 octets.
+#define NB_OCTETS_CHIFFRE 4 //chaque résultat chiffré est stocké sur 4 octets.
 
 
 int64_t bezoutRSA(uint64_t a, uint64_t b, int64_t *u, int64_t *v);
@@ -41,7 +40,7 @@ void printKeyHex(const rsaKey_t *key);
 /** affiche une paire de clefs (publique puis privée) en hexadécimal */
 void printKeyPairHex(const keyPair_t *kp);
 
-/** sauve une paire de clefs dans un fichier texte (hexa). 
+/** sauve une paire de clefs dans un fichier texte. 
  * @return 0 si OK, -1 sinon 
  * */
 int saveKeys(const char *filename, const keyPair_t *kp);
@@ -94,6 +93,74 @@ int chiffrer_fichier(const char *fichier_entree, const char *fichier_sortie, con
  * @return 0 si le déchiffrement réussit, -1 en cas d'erreur.
  */
 int dechiffrer_fichier(const char *fichier_entree, const char *fichier_sortie, const rsaKey_t *privKey);
+
+
+/**
+ * @brief Encode un tableau d'octets en Base64.
+ *
+ * @param data Tableau d'octets à encoder.
+ * @param input_length Taille du tableau d'octets à encoder.
+ * @param output_length Pointeur vers une variable qui recevra la taille du résultat encodé.
+ *                     
+ * @return Un pointeur vers la chaîne Base64 allouée dynamiquement,
+ *         ou NULL en cas d'erreur.
+ */
+char *base64_encode(const unsigned char *data, size_t input_length, size_t *output_length);
+
+/**
+ * @brief Décode une chaîne Base64 en tableau d'octets.
+ *
+ * @param[in] data Chaîne contenant les données encodées en Base64.
+ * @param[in] input_length Taille de la chaîne Base64 à décoder.
+ * @param[out] output_length Adresse où sera enregistrée la taille du résultat.
+ *
+ * @return Un pointeur vers le tableau d'octets décodé, NULL en cas d'erreur.
+ */
+unsigned char *base64_decode(const char *data, size_t input_length, size_t *output_length);
+
+/**
+ * @brief Convertit un tableau d'octets en chaîne de caractères Base64.
+ *
+ * @param[in] message Tableau d'octets à encoder.
+ * @param[in] taille Nombre d'octets du message.
+ * @param[out] taille_resultat Adresse où sera enregistrée la taille du résultat.
+ *
+ * @return Un pointeur vers la chaîne Base64 obtenue, NULL en cas d'erreur.
+ */
+char *uint8_to_base64(const uint8_t *message, size_t taille, size_t *taille_resultat);
+
+/**
+ * @brief Convertit une chaîne Base64 en tableau d'octets.
+ *
+ * @param[in] message_base64 Chaîne contenant les données encodées en Base64.
+ * @param[in] taille Taille de la chaîne Base64 à décoder.
+ * @param[out] taille_resultat Adresse où sera enregistrée la taille du tableau obtenu.
+ *
+ * @return Un pointeur vers le tableau d'octets décodé, NULL en cas d'erreur.
+ *
+ */
+uint8_t *base64_to_uint8(const char *message_base64, size_t taille, size_t *taille_resultat);
+
+/**
+ * @brief Convertit un fichier binaire en fichier encodé en Base64.
+ *
+ * @param[in] fichier_entree Chemin du fichier binaire à encoder.
+ * @param[in] fichier_sortie Chemin du fichier qui recevra le contenu encodé en Base64.
+ *
+ * @return 0 si la conversion réussit, -1 en cas d'erreur.
+ */
+int fichier_binaire_vers_base64(const char *fichier_entree, const char *fichier_sortie);
+
+/**
+ * @brief Convertit un fichier Base64 en fichier binaire.
+ *
+ * @param[in] fichier_entree Chemin du fichier contenant les données encodées en Base64.
+ * @param[in] fichier_sortie Chemin du fichier qui recevra les données binaires décodées.
+ *
+ * @return 0 si la conversion réussit, -1 en cas d'erreur.
+ */
+int fichier_base64_vers_binaire(const char *fichier_entree, const char *fichier_sortie);
+
 
 
 #endif

@@ -1,7 +1,7 @@
 CC     = gcc
 CFLAGS = -std=c99 -Wall -Wextra -pedantic -g
 EXEC   = main
-SRC    = main.c rsa_tools.c bezout.c phase1.c int2char.c 
+SRC    = main.c rsa_tools.c bezout.c phase1.c int2char.c other_base64.c
 OBJ    = $(SRC:.c=.o)
 
 all: $(EXEC)
