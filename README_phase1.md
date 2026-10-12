@@ -1,3 +1,13 @@
+## Équipe du projet
+
+**Groupe n° 8**
+
+Ce projet est réalisé par les membres suivants :
+
+- **Alpha Nouhoum TOURE**
+- **Yanis AHAQAR**
+- **Ifaz Abrar ULLAH**
+- **Johan NZENGUE MOMO**
 # Phase 1.0 — Implémentation et tests du chiffrement RSA
 
 ## 1. Objectif
