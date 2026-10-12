@@ -68,7 +68,7 @@ Un entier uint64_t peut représenter une valeur comprise entre
 ### Test 2 : MAX_PRIME = 1 000
 - **Nombre de tests :** 100
 - **Nombre d'échecs :** 0
-- **Observations :** Aucun échec n'a été observé. Les calculs restent dans une plage permettant au programme de fonctionner correctement.
+- **Observations :** Aucun échec n'a été observé. Les calculs restent dans une plage permettant au programme de fonctionner correctement pour une utilisation restrain.
 
 ### Test 3 : MAX_PRIME = 10 000
 - **Nombre de tests :** 100
@@ -112,7 +112,7 @@ L'objectif est de vérifier que les fonctions `chiffrer_tab_octet` et `dechiffre
 
 #### Tests réalisés
 
-- **Test d'un message simple :** utilisation du message `"AAAA"` pour vérifier que le chiffrement et le déchiffrement fonctionnent sur un tableau contenant plusieurs fois le même caractère.
+- **Test d'un message simple :** utilisation du message `"Test"` pour vérifier que le chiffrement et le déchiffrement fonctionnent sur un tableau contenant plusieurs fois le même caractère.
 - **Vérification du résultat :** après le déchiffrement, comparaison du message obtenu avec le message original à l'aide de `memcmp`. Le test est réussi si les deux tableaux sont identiques.
 - **Test sur plusieurs octets :** vérification que les fonctions traitent correctement plusieurs octets successifs dans un même tableau.
 - **Test avec une paire de clés générée :** génération d'une paire de clés avant le chiffrement et le déchiffrement, afin de vérifier le fonctionnement avec les clés produites par le programme.
@@ -147,7 +147,7 @@ Un test est considéré comme réussi si :
 
 Cette politique de tests permet de vérifier le fonctionnement du chiffrement et du déchiffrement sur des fichiers, ainsi que la conservation du message original après déchiffrement.
 
-# Phase 1.23
+# Phase 1.3
 
 ## Bilan des tests de validation
 
