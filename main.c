@@ -89,7 +89,7 @@ void test_chiffrement_dechiffrement_tab_octet(){
     return;
   }
 
-  printf("Message dechiffrer %s\n", (char *)message_dechiffrer);
+  printf("Message dechiffrer : %s\n", (char *)message_dechiffrer);
 
   if (memcmp(message_dechiffrer, message, taille) == 0) // compare le taille premier octect pointer par message_dechiffrer et message
   {

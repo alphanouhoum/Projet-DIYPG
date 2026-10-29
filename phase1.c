@@ -50,14 +50,14 @@ int loadKeys(const char *filename, keyPair_t *kp)
 
     // load de la cle publique
 
-    if (fscanf(f, "Clé publique : E= %llu  N= %llu\n", &kp->pubKey.E, &kp->pubKey.N) != 2)
+    if (fscanf(f, "Clé publique : E= %lu  N= %lu\n", &kp->pubKey.E, &kp->pubKey.N) != 2)
     {
         fclose(f);
         return -1;
     }
 
     // load de la cle prive
-    if (fscanf(f, "Clé privée   : E= %llu  N= %llu\n", &kp->privKey.E, &kp->privKey.N) != 2)
+    if (fscanf(f, "Clé privée   : E= %lu  N= %lu\n", &kp->privKey.E, &kp->privKey.N) != 2)
     {
         fclose(f);
         return -1;
@@ -81,7 +81,7 @@ uint8_t *chiffrer_tab_octet(const uint8_t *message, size_t taille, const rsaKey_
     for (size_t i = 0; i < taille; i++)
     {
         uint64_t caractere_chiffre = puissance_mod_n(message[i], pubKey->E, pubKey->N);
-        convertInt2uchar((uint32_t)caractere_chiffre, &res[i * NB_OCTETS_CHIFFRE]);
+        convertInt2uchar(caractere_chiffre, &res[i * NB_OCTETS_CHIFFRE]);
     }
 
     return res;
