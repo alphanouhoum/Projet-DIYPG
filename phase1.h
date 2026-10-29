@@ -14,19 +14,6 @@ int64_t bezoutRSA(uint64_t a, uint64_t b, int64_t *u, int64_t *v);
 uint64_t puissance_mod_n(uint64_t a, uint64_t e, uint64_t n);
 
 /**
- * \brief test de primarité, crible d'Erathostène
- * @return 1 si le nombre est premier, 0 sinon
- **/ 
-int premier(uint64_t n);
-
-/**
- * \brief pgcd rapide de a et b
- * @param[in] a et b les deux entiers
- * @return pgcd(a,b)
- */
-uint64_t pgcdFast(uint64_t a, uint64_t b);
-
-/**
  * \brief génère une paire de "grandes" clefs, adaptées au cryptage RSA par bloc
  * @param[out] pubKey : clef publique
  * @param[out] privKey : clef privée
@@ -49,12 +36,6 @@ int saveKeys(const char *filename, const keyPair_t *kp);
  * @return 0 si OK, -1 sinon
  * */
 int loadKeys(const char *filename, keyPair_t *kp);
-
-// conversion 4 octets en un int
-uint32_t convert_4byte2int(uint8_t *b);
-
-// conversion 1 int en 4 octets
-void convertInt2uchar(uint32_t nb,uint8_t *tab4bytes);
 
 /** 
  * @brief chiffrer un tableau d'octet. 
