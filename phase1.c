@@ -81,7 +81,12 @@ uint8_t *chiffrer_tab_octet(const uint8_t *message, size_t taille, const rsaKey_
     for (size_t i = 0; i < taille; i++)
     {
         uint64_t caractere_chiffre = puissance_mod_n(message[i], pubKey->E, pubKey->N);
-        convertInt2uchar(caractere_chiffre, &res[i * NB_OCTETS_CHIFFRE]);
+        
+        // Stockage du résultat sur 8 octets 
+        for (size_t j = 0; j < NB_OCTETS_CHIFFRE; j++)
+        {
+            res[i * NB_OCTETS_CHIFFRE + j] = (uint8_t)(caractere_chiffre >> (8 * j));
+        }
     }
 
     return res;
@@ -90,18 +95,30 @@ uint8_t *chiffrer_tab_octet(const uint8_t *message, size_t taille, const rsaKey_
 uint8_t *dechiffrer_tab_octet(const uint8_t *message_chiffre, size_t taille, const rsaKey_t *privKey)
 {
     size_t taille_message = taille / NB_OCTETS_CHIFFRE;
-    uint8_t *res = malloc(taille_message + 1);
+    uint8_t *res = malloc(taille_message+1);
+
     if (res == NULL)
         return NULL;
 
     for (size_t i = 0; i < taille_message; i++)
     {
-        uint32_t caractere_chiffre = convert_4byte2int((uint8_t *)&message_chiffre[i * NB_OCTETS_CHIFFRE]);
+        uint64_t chiffre = 0;
 
-        res[i] = (uint8_t)puissance_mod_n(caractere_chiffre, privKey->E, privKey->N);
+        // Reconstruction du nombre chiffré à partir des 8 octets
+        for (size_t j = 0; j < NB_OCTETS_CHIFFRE; j++)
+        {
+                   //OU binaire 
+            chiffre |= (uint64_t)message_chiffre[i * NB_OCTETS_CHIFFRE + j] << (8 * j);
+        }
+
+        uint64_t dechiffre = puissance_mod_n(chiffre, privKey->E, privKey->N);
+
+        res[i] = (uint8_t)dechiffre;
     }
 
     res[taille_message] = '\0';
+
+    
     return res;
 }
 

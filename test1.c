@@ -61,7 +61,7 @@ void test_chiffrement_dechiffrement_tab_octet(){
   keyPair_t rsa_key;
   genKeysRabin(&rsa_key.pubKey, &rsa_key.privKey, MAX_PRIME);
 
-  uint8_t message[] = "Test";
+  uint8_t message[] = "Test de chiffrage d'un message !";
   size_t taille = sizeof(message) - 1;
 
   printf("Message original : %s\n", message);

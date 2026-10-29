@@ -3,7 +3,7 @@
 
 #include "rsa_common_header.h"
 
-#define NB_OCTETS_CHIFFRE 4 //chaque résultat chiffré est stocké sur 4 octets.
+#define NB_OCTETS_CHIFFRE 8 //chaque résultat chiffré est stocké sur 8 octets.
 
 
 int64_t bezoutRSA(uint64_t a, uint64_t b, int64_t *u, int64_t *v);
