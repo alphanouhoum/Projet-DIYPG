@@ -40,7 +40,7 @@ int loadKeys(const char *filename, keyPair_t *kp);
 /** 
  * @brief chiffrer un tableau d'octet. 
  * @param[in] message le tableau d'octet a chiffrer
- * @param[in] taille : taille du tableau
+ * @param[in] taille : taille du message
  * @param[in] pubKey : la clé publique utilisée pour le chiffrement
  * @return un tableau d'octet chiffrer, ou NULL en cas d'erreur
  * */

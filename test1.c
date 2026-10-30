@@ -66,7 +66,7 @@ void test_chiffrement_dechiffrement_tab_octet(){
 
   printf("Message original : %s\n", message);
 
-  printf("Taille originale : %zu octets\n", taille);
+  printf("Taille originale : %ld octets\n", taille);
 
   uint8_t *message_chifffrer = chiffrer_tab_octet(message, taille, &rsa_key.pubKey);
   if (message_chifffrer == NULL)

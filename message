@@ -1,1 +1,7 @@
-TEST message 1234
+Le chiffrement RSA repose sur la difficulte de factoriser le produit de deux grands nombres premiers. La cle publique permet de chiffrer un message, tandis que seule la cle privee permet de le dechiffrer.
+
+Dans cet exercice, le message est decoupe en blocs de quatre octets, et chaque bloc est chiffre separement avec l'exponentiation modulaire. Le dernier bloc peut etre partiel, il est alors complete par des zeros avant le chiffrement.
+
+Si ce texte ressort identique apres le dechiffrement, alors la gestion du dernier bloc, l'ordre des octets et la gestion de la memoire sont corrects.
+
+Ce paragraphe contient des chiffres (0123456789), de la ponctuation (;,.!?-_:) et des retours a la ligne, pour verifier que tous les octets passent bien. Voici une derniere phrase de longueur impaire pour tester un bloc partiel : fin du test.

@@ -94,13 +94,13 @@ uint8_t *chiffrer_tab_octet(const uint8_t *message, size_t taille, const rsaKey_
 
 uint8_t *dechiffrer_tab_octet(const uint8_t *message_chiffre, size_t taille, const rsaKey_t *privKey)
 {
-    size_t taille_message = taille / NB_OCTETS_CHIFFRE;
-    uint8_t *res = malloc(taille_message+1);
+    size_t taille_original = taille / NB_OCTETS_CHIFFRE;
+    uint8_t *res = malloc(taille_original+1);
 
     if (res == NULL)
         return NULL;
 
-    for (size_t i = 0; i < taille_message; i++)
+    for (size_t i = 0; i < taille_original; i++)
     {
         uint64_t chiffre = 0;
 
@@ -116,7 +116,7 @@ uint8_t *dechiffrer_tab_octet(const uint8_t *message_chiffre, size_t taille, con
         res[i] = (uint8_t)dechiffre;
     }
 
-    res[taille_message] = '\0';
+    res[taille_original] = '\0';
 
     
     return res;
