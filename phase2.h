@@ -33,5 +33,9 @@ int chiffrer_fichierV2(const char *fichier_entree, const char *fichier_sortie, c
 
 int dechiffrer_fichierV2(const char *fichier_entree, const char *fichier_sortie, const rsaKey_t *privKey, tab_bloc_t *info_chiffrer);
 
+char *base64_encode(const unsigned char *data, size_t input_length, size_t *output_length);
+
+unsigned char *base64_decode(const char *data, size_t input_length, size_t *output_length);
+
 
 #endif

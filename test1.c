@@ -163,9 +163,9 @@ int test_conversion_base64(const char *nom, const void *donnee, size_t taille)
   for (size_t i = 0; i < taille; i++)
     printf("%02X ", octets[i]); 
 
-  printf("\nMessage Base64        : %s\n", base64);
+  printf("\nMessage Base64         : %s\n", base64);
 
-  printf("Message decode (hex)  : ");
+  printf("Message decode (hex)   : ");
   for (size_t i = 0; i < taille_decodee; i++)
     printf("%02X ", decode[i]);
 

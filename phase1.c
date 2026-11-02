@@ -138,7 +138,7 @@ int chiffrer_fichier(const char *fichier_entree, const char *fichier_sortie, con
         return -1;
     }
 
-    // Determination de la taille du fichier
+    // calcul de la taille du fichier
     if (fseek(f_entree, 0, SEEK_END) != 0)
     {
         fclose(f_entree);
@@ -211,7 +211,7 @@ int dechiffrer_fichier(const char *fichier_entree, const char *fichier_sortie, c
         return -1;
     }
 
-    // Determination de la taille du fichier
+    // calcul de la taille du fichier
     if (fseek(f_entree, 0, SEEK_END) != 0)
     {
         fclose(f_entree);

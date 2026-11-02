@@ -88,7 +88,6 @@ uint8_t *dechiffrer_tab_octetV2(tab_bloc_t *info_chiffrer,const rsaKey_t *privKe
         puissance_mod_n_gmp(resultat, info_chiffrer->res_blocs[i], privKey->E, privKey->N);
 
         uint32_t nombre = mpz_get_ui(resultat);
-        printf("bloc %ld -> Nombre dechiffrer : %u\n", i,  nombre);
 
         uint8_t bloc[NB_OCTETS_BLOC];
 
@@ -261,3 +260,5 @@ int dechiffrer_fichierV2(const char *fichier_entree, const char *fichier_sortie,
 
     return 0;
 }
+
+

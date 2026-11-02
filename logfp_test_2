@@ -6,3 +6,7 @@ num1 = 78721 num2 = 28477 cpt1 = 3 cpt2 = 7
 bezoutRSA : r = 1 U = 203784611 V = 18446744073709551615
 Retour de Bézout : U = 203784611 V = 18446744073709551615 C = 11 M = 2241630720
 Calcul : C*U + M*V = 1, C*U + M*V mod M = 1
+num1 = 10487 num2 = 7817 cpt1 = 3 cpt2 = 8
+bezoutRSA : r = 1 U = 18446744073682232091 V = 1
+Retour de Bézout : U = 54639051 V = 1 C = 3 M = 81958576
+Calcul : C*U + M*V = 245875729, C*U + M*V mod M = 1
