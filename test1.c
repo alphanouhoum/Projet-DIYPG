@@ -8,7 +8,7 @@
 FILE *logfp;
 
 void test_affichage_hex(){
-  printf("TEST affichage clé HEXADECIMAL\n");
+  printf("========== TEST Affichage clé HEXADECIMAL ==========\n");
   keyPair_t rsa_key;
   genKeysRabin(&rsa_key.pubKey, &rsa_key.privKey, MAX_PRIME);
   printKeyPairHex(&rsa_key);
@@ -31,7 +31,7 @@ void test_save_and_load_key(){
 }
 
 void test_utf8(int nb_test){
-  printf("\n\nTEST chiffrement et déchiffrement caractère UTF8\n");
+  printf("\n\n========== TEST Caractère UTF8 ==========\n");
 
   int nb_echec = 0;
 
@@ -56,12 +56,12 @@ void test_utf8(int nb_test){
 }
 
 void test_chiffrement_dechiffrement_tab_octet(){
-  printf("\n\nTEST chiffrement et déchiffrement tableau d'octets\n");
+  printf("\n\n========== TEST Tableau octets ==========\n");
 
   keyPair_t rsa_key;
   genKeysRabin(&rsa_key.pubKey, &rsa_key.privKey, MAX_PRIME);
 
-  uint8_t message[] = "Test de chiffrage d'un message !";
+  uint8_t message[] = "Test de chiffrage d'un message 123 !";
   size_t taille = sizeof(message) - 1;
 
   printf("Message original : %s\n", message);
@@ -105,7 +105,7 @@ void test_chiffrement_dechiffrement_tab_octet(){
 }
 
 void test_chiffrement_dechiffrement_fichier(){
-  printf("\n\nTEST chiffrement et déchiffrement fichier\n");
+  printf("\n\n========== TEST Fichier ==========\n");
 
   keyPair_t rsa_key;
   genKeysRabin(&rsa_key.pubKey, &rsa_key.privKey, MAX_PRIME);

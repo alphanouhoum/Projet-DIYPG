@@ -73,6 +73,9 @@ int loadKeys(const char *filename, keyPair_t *kp)
 
 uint8_t *chiffrer_tab_octet(const uint8_t *message, size_t taille, const rsaKey_t *pubKey)
 {
+    if (message == NULL || pubKey == NULL || taille == 0)
+        return NULL;
+
     uint8_t *res = malloc(taille * NB_OCTETS_CHIFFRE);
 
     if (res == NULL)
@@ -82,7 +85,7 @@ uint8_t *chiffrer_tab_octet(const uint8_t *message, size_t taille, const rsaKey_
     {
         uint64_t caractere_chiffre = puissance_mod_n(message[i], pubKey->E, pubKey->N);
         
-        // Stockage du résultat sur 8 octets 
+        // Stockage du résultat sur 8 octets en little-endian
         for (size_t j = 0; j < NB_OCTETS_CHIFFRE; j++)
         {
             res[i * NB_OCTETS_CHIFFRE + j] = (uint8_t)(caractere_chiffre >> (8 * j));
@@ -94,6 +97,9 @@ uint8_t *chiffrer_tab_octet(const uint8_t *message, size_t taille, const rsaKey_
 
 uint8_t *dechiffrer_tab_octet(const uint8_t *message_chiffre, size_t taille, const rsaKey_t *privKey)
 {
+    if (message_chiffre == NULL || privKey == NULL || taille % NB_OCTETS_CHIFFRE != 0)
+        return NULL;
+
     size_t taille_original = taille / NB_OCTETS_CHIFFRE;
     uint8_t *res = malloc(taille_original+1);
 
@@ -103,7 +109,6 @@ uint8_t *dechiffrer_tab_octet(const uint8_t *message_chiffre, size_t taille, con
     for (size_t i = 0; i < taille_original; i++)
     {
         uint64_t chiffre = 0;
-
         // Reconstruction du nombre chiffré à partir des 8 octets
         for (size_t j = 0; j < NB_OCTETS_CHIFFRE; j++)
         {
@@ -111,9 +116,7 @@ uint8_t *dechiffrer_tab_octet(const uint8_t *message_chiffre, size_t taille, con
             chiffre |= (uint64_t)message_chiffre[i * NB_OCTETS_CHIFFRE + j] << (8 * j);
         }
 
-        uint64_t dechiffre = puissance_mod_n(chiffre, privKey->E, privKey->N);
-
-        res[i] = (uint8_t)dechiffre;
+        res[i] = (uint8_t)puissance_mod_n(chiffre, privKey->E, privKey->N);
     }
 
     res[taille_original] = '\0';
@@ -241,8 +244,8 @@ int dechiffrer_fichier(const char *fichier_entree, const char *fichier_sortie, c
     }
 
     fclose(f_entree);
-    // dechiffrement du message
 
+    // dechiffrement du message
     uint8_t *message_dechiffrer = dechiffrer_tab_octet(message_chiffrer, taille, privKey);
     free(message_chiffrer);
 
