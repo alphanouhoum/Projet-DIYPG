@@ -79,7 +79,7 @@ void cmd_savepub(char *keyid, char *fileOut) {
     if (idx == -1) { printf("Erreur : clef introuvable.\n"); return; }
     FILE *f = fopen(fileOut, "w");
     if (!f) { printf("Erreur : impossible de créer %s.\n", fileOut); return; }
-    fprintf(f, "%llu\n%llu\n", (unsigned long long)directory.tab[idx].keys.pubKey.E, (unsigned long long)directory.tab[idx].keys.pubKey.N);
+    fprintf(f, "E= %llu\nN= %llu\n", (unsigned long long)directory.tab[idx].keys.pubKey.E, (unsigned long long)directory.tab[idx].keys.pubKey.N);
     fclose(f);
     printf("Clef publique exportée dans '%s'.\n", fileOut);
 }
