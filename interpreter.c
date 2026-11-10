@@ -36,7 +36,7 @@ void cmd_newkeys(char *id, char *type) {
     {
         genKeysRabin(&new_key.keys.pubKey, &new_key.keys.privKey, MAX_PRIME); 
     } while (new_key.keys.pubKey.N <= UINT32_MAX);
-    
+
     directory.tab[directory.count++] = new_key;
     printf("Clefs générées et ajoutées !\n");
 }
@@ -126,7 +126,7 @@ void cmd_uncrypt(char *fileIn, char *fileOut, char *keyid) {
         printf("Erreur lors du Déchhiffrement.\n");
 }
 
-void cmd_bin2664(char *fileIn, char *fileOut) {
+void cmd_bin2b64(char *fileIn, char *fileOut) {
     if (!fileIn || !fileOut) { printf("Usage : bin-2664 <filein> <fileout>\n"); return; }
     FILE *fin = fopen(fileIn, "rb");
     if (!fin) { printf("Erreur d'ouverture de %s\n", fileIn); return; }
@@ -141,7 +141,7 @@ void cmd_bin2664(char *fileIn, char *fileOut) {
     free(in_buffer); free(encoded);
 }
 
-void cmd_6642bin(char *fileIn, char *fileOut) {
+void cmd_b642bin(char *fileIn, char *fileOut) {
     if (!fileIn || !fileOut) { printf("Usage : 664-2bin <filein> <fileout>\n"); return; }
     FILE *fin = fopen(fileIn, "rb");
     if (!fin) { printf("Erreur d'ouverture de %s\n", fileIn); return; }
@@ -234,15 +234,15 @@ void start_interpreter() {
             char *id = strtok(NULL, delim);
             cmd_uncrypt(fin, fout, id);
         }
-        else if (strcmp(cmd, "bin-2664") == 0) {
+        else if (strcmp(cmd, "bin-2b64") == 0) {
             char *fin = strtok(NULL, delim);
             char *fout = strtok(NULL, delim);
-            cmd_bin2664(fin, fout);
+            cmd_bin2b64(fin, fout);
         }
-        else if (strcmp(cmd, "664-2bin") == 0) {
+        else if (strcmp(cmd, "b64-2bin") == 0) {
             char *fin = strtok(NULL, delim);
             char *fout = strtok(NULL, delim);
-            cmd_6642bin(fin, fout);
+            cmd_b642bin(fin, fout);
         }
         else if (strcmp(cmd, "help") == 0) {
             afficher_aide();
