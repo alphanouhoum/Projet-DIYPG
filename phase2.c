@@ -6,6 +6,93 @@
 #include "phase2.h"
 
 
+static void init_tab_bloc(tab_bloc_t *info)
+{
+    info->res_blocs = NULL;
+    info->nb_blocs = 0;
+    info->taille_msg = 0;
+}
+
+
+static uint8_t *lire_fichier(const char *nom, size_t *taille)
+{
+    FILE *f = fopen(nom, "rb");
+    if (f == NULL) { 
+        perror("Ouverture fichier"); 
+        return NULL; 
+    }
+ 
+    if (fseek(f, 0, SEEK_END) != 0) { 
+        fclose(f); return NULL; 
+    }
+
+    long t = ftell(f);
+    if (t < 0) {
+        fclose(f); return NULL; 
+    }
+    rewind(f);
+ 
+    uint8_t *buf = malloc(t > 0 ? (size_t)t : 1);   /* evite malloc(0) */
+    if (!buf) { 
+        fclose(f); 
+        return NULL; 
+    }
+ 
+    if (fread(buf, 1, (size_t)t, f) != (size_t)t) {
+        fprintf(stderr, "Lecture incomplete de %s\n", nom);
+        free(buf);
+        fclose(f);
+        return NULL;
+    }
+    fclose(f);
+    *taille = (size_t)t;
+    return buf;
+}
+
+static int ecrire_fichier(const char *nom, const uint8_t *data, size_t taille)
+{
+    FILE *f = fopen(nom, "wb");
+    if (f == NULL) { 
+        perror("Ouverture fichier de sortie"); 
+        return -1; 
+    }
+ 
+    size_t ecrit = fwrite(data, 1, taille, f);
+    
+    if (ecrit != taille) {
+        perror("Erreur fwrite");
+        fprintf(stderr, "Octets ecrits : %zu / %zu\n", ecrit, taille);
+        fclose(f);
+        return -1;
+    }
+
+    fclose(f);
+
+    return 0;
+}
+
+static void ecrire_header(uint8_t *out, uint64_t v)
+{
+    for (int j = 0; j < 8; j++)
+        out[j] = (uint8_t)(v >> (8 * j));
+}
+ 
+static uint64_t lire_header(const uint8_t *in)
+{
+    uint64_t v = 0;
+    for (int j = 0; j < 8; j++)
+        v |= (uint64_t)in[j] << (8 * j);
+    return v;
+}
+
+
+void liberer_tab_bloc(tab_bloc_t *info)
+{
+    free(info->res_blocs);   
+    init_tab_bloc(info);     
+}
+
+
 void puissance_mod_n_gmp(mpz_t res, uint64_t a, uint64_t e, uint64_t n)
 {
     mpz_t base, exposant, modulo;
@@ -32,14 +119,31 @@ void puissance_mod_n_gmp(mpz_t res, uint64_t a, uint64_t e, uint64_t n)
 
 int chiffrer_tab_octetV2(const uint8_t *message, size_t taille, const rsaKey_t *pubKey, tab_bloc_t *info_chiffrer)
 {
+    if (taille < 1)
+    {
+        fprintf(stderr, "Message Vide\n");
+        return -1;
+    }
+    
+    init_tab_bloc(info_chiffrer);
+
+    
+    if (pubKey->N <= UINT32_MAX) {
+        fprintf(stderr, "N doit etre > 2^32 pour des blocs de 4 octets\n");
+        printf("N = %lu\n", pubKey->N);
+        return -1;
+    }
+    
+
+
     info_chiffrer->taille_msg = taille;
-
-    info_chiffrer->nb_blocs = (info_chiffrer->taille_msg + NB_OCTETS_BLOC-1)/NB_OCTETS_BLOC;
-
+    info_chiffrer->nb_blocs = (info_chiffrer->taille_msg + NB_OCTETS_BLOC-1) / NB_OCTETS_BLOC;
     info_chiffrer->res_blocs = malloc(info_chiffrer->nb_blocs * sizeof(uint64_t));
+
 
     if (info_chiffrer->res_blocs == NULL)
     {
+        init_tab_bloc(info_chiffrer);
         return -1;
     }
     
@@ -50,7 +154,7 @@ int chiffrer_tab_octetV2(const uint8_t *message, size_t taille, const rsaKey_t *
         uint8_t bloc[NB_OCTETS_BLOC] = {0}; //tableau initialiser de 0 
 
         size_t debut_bloc = i * NB_OCTETS_BLOC;
-        size_t octets_restants = info_chiffrer->taille_msg - debut_bloc; // 4 ou moin pour le dernier bloc
+        size_t octets_restants = taille - debut_bloc; // 4 ou moin pour le dernier bloc
         size_t octets_a_copier;
 
         if (octets_restants < NB_OCTETS_BLOC) 
@@ -62,7 +166,7 @@ int chiffrer_tab_octetV2(const uint8_t *message, size_t taille, const rsaKey_t *
 
         //copi des octets a copie dans bloc  
         memcpy(bloc, message + debut_bloc, octets_a_copier);
-        //printf("Bloc %ld : %s\n", i, bloc);
+        
         uint32_t nombre = convert_4byte2int(bloc); //nombre obetenu par la conversion du bloc
        
         puissance_mod_n_gmp(resultat, nombre, pubKey->E, pubKey->N);
@@ -74,11 +178,11 @@ int chiffrer_tab_octetV2(const uint8_t *message, size_t taille, const rsaKey_t *
 }
 
 uint8_t *dechiffrer_tab_octetV2(tab_bloc_t *info_chiffrer,const rsaKey_t *privKey){
-    uint8_t *res = malloc(info_chiffrer->taille_msg+1 );
     
-    if(res == NULL){
+    uint8_t *res = malloc(info_chiffrer->taille_msg+1 );
+    if(res == NULL)
         return NULL;
-    }
+    
 
     mpz_t resultat;
     mpz_init(resultat);
@@ -112,153 +216,106 @@ uint8_t *dechiffrer_tab_octetV2(tab_bloc_t *info_chiffrer,const rsaKey_t *privKe
 
     res[info_chiffrer->taille_msg] = '\0';
     return res;
-    
-
 }
 
-int chiffrer_fichierV2(const char *fichier_entree, const char *fichier_sortie, const rsaKey_t *pubKey, tab_bloc_t *info_chiffrer)
+int chiffrer_fichierV2(const char *fichier_entree, const char *fichier_sortie, const rsaKey_t *pubKey)
 {
+    tab_bloc_t info;
+    init_tab_bloc(&info);
 
-    // ouverture du fichier entrer
-    FILE *f_entree = fopen(fichier_entree, "rb");
-
-    if (f_entree == NULL)
-    {
-        perror("Erreur d'ouverture du fichier d'entrer");
+    //Lecture du fichier 
+    size_t taille;
+    uint8_t *message = lire_fichier(fichier_entree, &taille);
+    if (!message){
         return -1;
-    }
+    }   
 
-    // Determination de la taille du fichier
-    if (fseek(f_entree, 0, SEEK_END) != 0)
-    {
-        fclose(f_entree);
-        return -1;
-    }
-
-    long taille_fichier = ftell(f_entree);
-
-    
-    rewind(f_entree);
-
-    // Lecture du fichier
-    size_t taille = (size_t)taille_fichier;
-    uint8_t *message = malloc(taille);
-
-    if (message == NULL)
-    {
-        fclose(f_entree);
-        return -1;
-    }
-
-    if (fread(message, 1, taille, f_entree) != taille)
-    {
-        free(message);
-        fclose(f_entree);
-        perror("MESSAGE lu différent de Taille fichier\n");
-        return -1;
-    }
-
-    fclose(f_entree);
-    // chiffrement du message
-
-    int res_chiffrage = chiffrer_tab_octetV2(message, taille, pubKey, info_chiffrer);
-
-    free(message);
-
+    int res_chiffrage = chiffrer_tab_octetV2(message, taille, pubKey, &info);
+    free(message);  //info.res contient la data chiffre
     if (res_chiffrage != 0)
     {
-        fprintf(stderr,"Erreur de chiffrement\n");
+        fprintf(stderr, "Erreur de chiffrement\n");
+        return -1;
+
+    }
+
+    /* Construction du buffer de sortie = en-tete (taille_msg) + blocs chiffres */
+    size_t taille_out = 8 + info.nb_blocs * NB_OCTETS_CHIFFRE;
+    uint8_t *out = malloc(taille_out);
+    if (!out) {
+        liberer_tab_bloc(&info);
         return -1;
     }
 
-    // ouverture fichier sortie
-    FILE *f_sortie = fopen(fichier_sortie, "wb");
-
-    if (f_sortie == NULL)
-    {
-        free(info_chiffrer->res_blocs);
-        return -1;
-    }
-
-    // Ecriture du message chiffre
-    size_t taille_chiffree = taille * NB_OCTETS_CHIFFRE;
-
-    fwrite(info_chiffrer->res_blocs, 1, taille_chiffree, f_sortie);
-    fclose(f_sortie);
-
-    return 0;
+    ecrire_header(out, (uint64_t)info.taille_msg);
+    for (size_t i = 0; i < info.nb_blocs; i++)
+        ecrire_header(out + 8 + i * NB_OCTETS_CHIFFRE, info.res_blocs[i]);
+ 
+    
+    res_chiffrage = ecrire_fichier(fichier_sortie, out, taille_out);
+ 
+    free(out);
+    liberer_tab_bloc(&info);
+    return res_chiffrage;
 }
 
 
-int dechiffrer_fichierV2(const char *fichier_entree, const char *fichier_sortie, const rsaKey_t *privKey, tab_bloc_t *info_chiffrer)
-{
-    // ouverture du fichier entrer
-    FILE *f_entree = fopen(fichier_entree, "rb");
+int dechiffrer_fichierV2(const char *fichier_entree, const char *fichier_sortie, const rsaKey_t *privKey) {
 
-    if (f_entree == NULL)
-    {
-        perror("Erreur d'ouverture du fichier d'entrer");
+    tab_bloc_t info;
+    init_tab_bloc(&info);
+ 
+    size_t taille;
+    uint8_t *buf = lire_fichier(fichier_entree, &taille);
+    if (!buf)
+        return -1;
+ 
+    if (taille < 8 || (taille - 8) % NB_OCTETS_CHIFFRE != 0) {
+        fprintf(stderr, "Fichier chiffre invalide\n");
+        free(buf);
+        return -1;
+    }
+ 
+    // Récupérer la taille originale
+    uint64_t taille_msg = lire_header(buf);
+    size_t nb_blocs = (taille - 8) / NB_OCTETS_CHIFFRE;
+ 
+   
+    if (taille_msg / NB_OCTETS_BLOC + (taille_msg % NB_OCTETS_BLOC != 0) != nb_blocs) {
+        fprintf(stderr, "En-tete incoherent\n");
+        free(buf);
         return -1;
     }
 
-    // Determination de la taille du fichier
-    if (fseek(f_entree, 0, SEEK_END) != 0)
-    {
-        fclose(f_entree);
+    // Reconstruire le tableau des blocs chiffrés
+
+    info.taille_msg = (size_t)taille_msg;
+    info.nb_blocs = nb_blocs;
+    info.res_blocs = malloc((nb_blocs ? nb_blocs : 1) * sizeof(uint64_t));
+    if (info.res_blocs == NULL) {
+        free(buf);
+        init_tab_bloc(&info);
         return -1;
     }
 
-    long taille_fichier = ftell(f_entree);
+    for (size_t i = 0; i < nb_blocs; i++)
+        info.res_blocs[i] = lire_header(buf + 8 + i * NB_OCTETS_CHIFFRE);
+    free(buf);
 
-    rewind(f_entree);
 
-    // Lecture du fichier
-    size_t taille = (size_t)taille_fichier;
-    uint8_t *message_chiffrer = malloc(taille);
-
-    if (message_chiffrer == NULL)
-    {
-        fclose(f_entree);
+    // Déchiffrement des blocs
+    uint8_t *clair = dechiffrer_tab_octetV2(&info, privKey);
+    size_t taille_clair = info.taille_msg;
+    liberer_tab_bloc(&info);
+    if (!clair) {
+        fprintf(stderr, "Erreur de dechiffrement\n");
         return -1;
     }
+ 
+    int r = ecrire_fichier(fichier_sortie, clair, taille_clair);
+    free(clair);
+    return r;
 
-    if (fread(message_chiffrer, 1, taille, f_entree) != taille)
-    {
-        free(message_chiffrer);
-        fclose(f_entree);
-        perror("MESSAGE lu différent de Taille fichier\n");
-        return -1;
-    }
-
-    fclose(f_entree);
-    // dechiffrement du message
-
-    uint8_t *message_dechiffrer = dechiffrer_tab_octetV2(info_chiffrer, privKey);
-    free(message_chiffrer);
-
-    if (message_dechiffrer == NULL)
-    {
-        fprintf(stderr,"Erreur de déchiffrement\n");
-        return -1;
-    }
-
-    FILE *f_sortie = fopen(fichier_sortie, "wb");
-
-    if (f_sortie == NULL)
-    {
-        free(message_dechiffrer);
-        return -1;
-    }
-
-    // Ecriture du message chiffre 
-    size_t taille_dechiffree = taille / NB_OCTETS_CHIFFRE;
-
-    fwrite(message_dechiffrer, 1, taille_dechiffree, f_sortie);
-
-    free(message_dechiffrer);
-    fclose(f_sortie);
-
-    return 0;
 }
 
 

@@ -22,6 +22,7 @@ typedef struct tab_bloc_s{
 
 } tab_bloc_t;
 
+void liberer_tab_bloc(tab_bloc_t *info);
 
 /**
  * @brief Convertit 4 octets en un entier non signé de 32 bits.
@@ -82,11 +83,10 @@ uint8_t *dechiffrer_tab_octetV2(tab_bloc_t *info_chiffrer, const rsaKey_t *privK
  * @param[in] fichier_entree Chemin du fichier contenant les données à chiffrer.
  * @param[in] fichier_sortie nom du fichier qui recevra les données chiffrées.
  * @param[in] pubKey Clé publique RSA utilisée pour le chiffrement.
- * @param[out] info_chiffrer Structure qui recevra les informations relatives aux blocs chiffrés.
  *
  * @return 0 si le chiffrement réussit, -1 en cas d'erreur.
  */
-int chiffrer_fichierV2(const char *fichier_entree, const char *fichier_sortie, const rsaKey_t *pubKey, tab_bloc_t *info_chiffrer);
+int chiffrer_fichierV2(const char *fichier_entree, const char *fichier_sortie, const rsaKey_t *pubKey);
 
 /**
  * @brief Déchiffre le contenu d'un fichier à l'aide d'une clé privé RSA.
@@ -94,11 +94,10 @@ int chiffrer_fichierV2(const char *fichier_entree, const char *fichier_sortie, c
  * @param[in] fichier_entree Chemin du fichier contenant les données à chiffrer.
  * @param[in] fichier_sortie nom du fichier qui recevra les données chiffrées.
  * @param[in] pubKey Clé privé RSA utilisée pour le déchiffrement.
- * @param[out] info_chiffrer Structure contenant les informations relatives aux blocs chiffrés.
  *
  * @return 0 si le chiffrement réussit, -1 en cas d'erreur.
  */
-int dechiffrer_fichierV2(const char *fichier_entree, const char *fichier_sortie, const rsaKey_t *privKey, tab_bloc_t *info_chiffrer);
+int dechiffrer_fichierV2(const char *fichier_entree, const char *fichier_sortie, const rsaKey_t *privKey);
 
 /**
  * @brief Encode un tableau d'octets en Base64.

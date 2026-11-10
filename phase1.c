@@ -398,6 +398,7 @@ int fichier_binaire_vers_base64(const char *fichier_entree, const char *fichier_
         return -1;
     }
 
+    fclose(fichier);
     free(resultat);
 
     return 0;
@@ -492,6 +493,7 @@ int fichier_base64_vers_binaire(const char *fichier_entree, const char *fichier_
         return -1;
     }
 
+    fclose(fichier);
     free(resultat);
 
     return 0;
