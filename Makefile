@@ -1,9 +1,10 @@
 CC      = gcc
-CFLAGS  = -std=c99 -Wall -Wextra -pedantic -g
+CFLAGS  = -std=c99 -Wall -Wextra -pedantic -g -ISha256/Sha256
 
 EXEC = main test1 test2
 
-COMMON_OBJ = rsa_tools.o bezout.o int2char.o other_base64.o
+
+COMMON_OBJ = rsa_tools.o bezout.o int2char.o other_base64.o Sha256/Sha256/sha256.o Sha256/Sha256/sha256_utils.o
 OBJ = test1.o test2.o phase1.o phase2.o interpreter.o main.o $(COMMON_OBJ)
 
 IMG = image_chiffree image_dechiffree.jpg
@@ -17,7 +18,7 @@ main: main.o phase1.o phase2.o interpreter.o $(COMMON_OBJ)
 	$(CC) $(LDFLAGS) -o $@ $^ -lgmp
 
 test1: test1.o phase1.o $(COMMON_OBJ)
-	$(CC) $(LDFLAGS) -o $@ $^ 
+	$(CC) $(LDFLAGS) -o $@ $^ -lgmp
 
 test2: test2.o phase2.o phase1.o $(COMMON_OBJ)
 	$(CC) $(LDFLAGS) -o $@ $^ -lgmp

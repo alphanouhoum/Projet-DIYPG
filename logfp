@@ -1,0 +1,36 @@
+num1 = 49603 num2 = 83423 cpt1 = 3 cpt2 = 3
+bezoutRSA : r = 1 U = 827579609 V = 18446744073709551615
+Retour de Bézout : U = 827579609 V = 18446744073709551615 C = 5 M = 4137898044
+Calcul : C*U + M*V = 1, C*U + M*V mod M = 1
+num1 = 66337 num2 = 20593 cpt1 = 6 cpt2 = 15
+bezoutRSA : r = 1 U = 546396365 V = 18446744073709551614
+Retour de Bézout : U = 546396365 V = 18446744073709551614 C = 5 M = 1365990912
+Calcul : C*U + M*V = 1, C*U + M*V mod M = 1
+num1 = 38669 num2 = 15727 cpt1 = 2 cpt2 = 19
+bezoutRSA : r = 1 U = 18446744073466314429 V = 2
+Retour de Bézout : U = 364855781 V = 2 C = 5 M = 608092968
+Calcul : C*U + M*V = 3040464841, C*U + M*V mod M = 1
+num1 = 38371 num2 = 52769 cpt1 = 4 cpt2 = 3
+bezoutRSA : r = 1 U = 289244023 V = 18446744073709551615
+Retour de Bézout : U = 289244023 V = 18446744073709551615 C = 7 M = 2024708160
+Calcul : C*U + M*V = 1, C*U + M*V mod M = 1
+num1 = 79657 num2 = 15767 cpt1 = 7 cpt2 = 2
+bezoutRSA : r = 1 U = 18446744073458380317 V = 1
+Retour de Bézout : U = 1004685197 V = 1 C = 5 M = 1255856496
+Calcul : C*U + M*V = 6279282481, C*U + M*V mod M = 1
+num1 = 587 num2 = 65063 cpt1 = 4 cpt2 = 2
+bezoutRSA : r = 1 U = 18446744073696842839 V = 1
+Retour de Bézout : U = 25417555 V = 1 C = 3 M = 38126332
+Calcul : C*U + M*V = 114378997, C*U + M*V mod M = 1
+num1 = 30341 num2 = 44351 cpt1 = 9 cpt2 = 18
+bezoutRSA : r = 1 U = 18446744073261025283 V = 1
+Retour de Bézout : U = 897052667 V = 1 C = 3 M = 1345579000
+Calcul : C*U + M*V = 4036737001, C*U + M*V mod M = 1
+num1 = 74597 num2 = 10651 cpt1 = 1 cpt2 = 4
+bezoutRSA : r = 1 U = 18446744073369074159 V = 3
+Retour de Bézout : U = 453969943 V = 3 C = 7 M = 794447400
+Calcul : C*U + M*V = 5561131801, C*U + M*V mod M = 1
+num1 = 83059 num2 = 57571 cpt1 = 3 cpt2 = 1
+bezoutRSA : r = 1 U = 683092723 V = 18446744073709551615
+Retour de Bézout : U = 683092723 V = 18446744073709551615 C = 7 M = 4781649060
+Calcul : C*U + M*V = 1, C*U + M*V mod M = 1
